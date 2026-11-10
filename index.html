@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A technical walkthrough of a personal AI-powered finance and document app built with Flutter, Supabase and managed integrations.">
+  <meta name="theme-color" content="#f6f4ef">
+  <title>Building a Personal AI-Powered App | Nikunj Mistry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="#top">NM<span>.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#architecture">Architecture</a>
+      <a href="#engineering">Engineering</a>
+      <a href="#security">Security</a>
+      <a class="nav-cta" href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Read the story ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <p class="eyebrow"><span class="eyebrow-line"></span> INDEPENDENT BUILD · TECHNICAL NOTES</p>
+      <h1>A personal app,<br><em>without the server</em><br>to manage.</h1>
+      <p class="hero-copy">A closer look at the architecture behind my AI-powered finance and document workspace — the services, data flows and engineering decisions that bring it together.</p>
+      <div class="hero-meta">
+        <span>BY NIKUNJ MISTRY</span><span class="meta-dot"></span><span>FLUTTER · SUPABASE · AI</span>
+      </div>
+      <div class="hero-rule"></div>
+      <div class="hero-note"><span class="note-mark">↘</span><span>This page is the technical companion to the <a href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Medium article</a>. It focuses on the system design rather than a product demo.</span></div>
+    </section>
+
+    <section class="section shell" id="architecture">
+      <div class="section-kicker">01 / SYSTEM DESIGN</div>
+      <div class="section-heading">
+        <h2>One app. A set of<br>managed building blocks.</h2>
+        <p>The client handles the experience. Supabase provides the backend foundation, while Edge Functions coordinate privileged operations and external services.</p>
+      </div>
+
+      <div class="architecture-card">
+        <div class="diagram-top"><span>HIGH-LEVEL ARCHITECTURE</span><span class="diagram-status"><i></i> CONCEPTUAL VIEW</span></div>
+        <div class="diagram">
+          <div class="diagram-client">
+            <div class="node node-client"><span class="node-label">CLIENT</span><strong>Flutter app</strong><small>Web · Android</small></div>
+          </div>
+          <div class="connector down"><span>HTTPS / SDK</span></div>
+          <div class="diagram-core">
+            <div class="core-label">SUPABASE PLATFORM</div>
+            <div class="node-grid">
+              <div class="node"><span class="node-icon">01</span><strong>Auth</strong><small>Identity & sessions</small></div>
+              <div class="node"><span class="node-icon">02</span><strong>PostgreSQL</strong><small>App data · RLS</small></div>
+              <div class="node"><span class="node-icon">03</span><strong>Storage</strong><small>Private documents</small></div>
+              <div class="node node-functions"><span class="node-icon">04</span><strong>Edge Functions</strong><small>Server-side workflows</small></div>
+            </div>
+          </div>
+          <div class="connector split"><span>FUNCTION CALLS</span></div>
+          <div class="diagram-integrations">
+            <div class="integration-group">
+              <span class="group-label">AI & AUTOMATION</span>
+              <div class="node node-external"><strong>Gemini API</strong><small>AI chat capability</small></div>
+              <div class="node node-external"><strong>Google Sheets</strong><small>Data export integration</small></div>
+            </div>
+            <div class="integration-group">
+              <span class="group-label">CONNECTED SERVICES</span>
+              <div class="node node-external"><strong>Zerodha Kite API</strong><small>Broker integration</small></div>
+              <div class="node node-external"><strong>Email service</strong><small>Notifications</small></div>
+            </div>
+          </div>
+          <div class="diagram-footer"><span>DELIVERY PIPELINE</span><b>GitHub Actions</b><span class="pipeline-arrow">→</span><b>Build & deploy</b></div>
+        </div>
+        <p class="diagram-caption">Simplified logical view. It describes the main application layers and integrations, not every request, permission boundary or deployment setting.</p>
+      </div>
+
+      <div class="architecture-grid">
+        <article class="architecture-item"><span class="item-number">A / CLIENT</span><h3>Flutter</h3><p>A shared Flutter codebase provides the application interface across web and Android. It communicates with backend services rather than holding privileged integration credentials.</p></article>
+        <article class="architecture-item"><span class="item-number">B / BACKEND</span><h3>Supabase</h3><p>Authentication, PostgreSQL, file storage and Edge Functions form the managed backend foundation. Row Level Security is part of the database access model.</p></article>
+        <article class="architecture-item"><span class="item-number">C / INTEGRATIONS</span><h3>External services</h3><p>Edge Functions provide a server-side place to coordinate AI requests and connected services such as Google Sheets, broker APIs and email notifications.</p></article>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="engineering">
+      <div class="shell">
+        <div class="section-kicker">02 / IMPLEMENTATION</div>
+        <div class="section-heading">
+          <h2>Keep the client lean.<br>Move privileged work server-side.</h2>
+          <p>The important design choice is not simply using serverless services. It is deciding which responsibilities belong in the app and which should stay behind a trusted backend boundary.</p>
+        </div>
+        <div class="workflow-list">
+          <article class="workflow-row"><span class="workflow-index">01</span><div><h3>Authentication & data access</h3><p>The user signs in through Supabase Auth. Application data lives in PostgreSQL, with Row Level Security used to enforce access rules at the database layer.</p></div><span class="workflow-tag">IDENTITY</span></article>
+          <article class="workflow-row"><span class="workflow-index">02</span><div><h3>Documents & files</h3><p>Supabase Storage provides a managed location for application documents. Access should be governed by the corresponding authorization rules rather than exposing private files publicly.</p></div><span class="workflow-tag">STORAGE</span></article>
+          <article class="workflow-row"><span class="workflow-index">03</span><div><h3>AI requests</h3><p>The app can use an Edge Function as a controlled server-side boundary for calls to the Gemini API. This keeps provider credentials out of the distributed client.</p></div><span class="workflow-tag">AI</span></article>
+          <article class="workflow-row"><span class="workflow-index">04</span><div><h3>Background & connected workflows</h3><p>Dedicated Edge Functions can isolate tasks such as PDF processing, document locking, email notifications, broker synchronisation and Sheets export.</p></div><span class="workflow-tag">AUTOMATION</span></article>
+          <article class="workflow-row"><span class="workflow-index">05</span><div><h3>Build & delivery</h3><p>GitHub Actions can automate repeatable build and deployment steps for the Flutter application and backend changes, reducing manual release work.</p></div><span class="workflow-tag">CI / CD</span></article>
+        </div>
+        <p class="small-note">The descriptions above explain the intended responsibilities of the components. Exact runtime triggers, schedules and deployment targets depend on the project configuration.</p>
+      </div>
+    </section>
+
+    <section class="section shell" id="security">
+      <div class="section-kicker">03 / SECURITY & PRIVACY</div>
+      <div class="section-heading">
+        <h2>Private data changes<br>how you share a project.</h2>
+        <p>This application is built around personal financial information and private documents. That makes access control and careful disclosure part of the engineering work — not an afterthought.</p>
+      </div>
+      <div class="security-grid">
+        <div class="security-lead"><span class="large-quote">“</span><p>I’m sharing the architecture and engineering decisions, not the contents of the application.</p></div>
+        <div class="security-points">
+          <div><b>01</b><p><strong>Database policies</strong><br>Use Row Level Security to restrict which records an authenticated user can access.</p></div>
+          <div><b>02</b><p><strong>Server-side secrets</strong><br>Keep third-party API keys and privileged credentials in backend-managed secrets, never in the Flutter bundle.</p></div>
+          <div><b>03</b><p><strong>Private files</strong><br>Keep sensitive documents behind authenticated access controls and avoid publishing real user data in screenshots or examples.</p></div>
+        </div>
+      </div>
+      <div class="privacy-callout"><span class="callout-icon">i</span><p><strong>Why there is no live demo</strong><br>The app contains personal financial records, sensitive documents and private integrations. I’m not publishing application screenshots or a live demo because protecting that information matters more than showcasing the interface.</p></div>
+    </section>
+
+    <section class="closing shell">
+      <p class="eyebrow"><span class="eyebrow-line"></span> THE BIGGER TAKEAWAY</p>
+      <h2>Less time managing<br>servers. More time<br><em>building useful things.</em></h2>
+      <p>Managed infrastructure does not mean there is no infrastructure. It means the operational responsibilities are handled by services, leaving me to focus more on application logic, integration design and the user experience.</p>
+      <a class="story-link" href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Read the original Medium story <span>↗</span></a>
+    </section>
+  </main>
+
+  <footer class="footer shell"><a class="wordmark" href="#top">NM<span>.</span></a><span>BUILT & DOCUMENTED BY NIKUNJ MISTRY</span><a href="https://github.com/Nikunjmistry22/personal-app" target="_blank" rel="noreferrer">SOURCE ON GITHUB ↗</a></footer>
+</body>
+</html>
