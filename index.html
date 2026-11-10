@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A technical walkthrough of a personal AI-powered finance and document app built with Flutter, Supabase and managed integrations.">
+  <meta name="description" content="A detailed engineering walkthrough of a personal AI-powered Telegram automation app built with Flutter, Supabase and Groq, using managed serverless infrastructure.">
   <meta name="theme-color" content="#f6f4ef">
-  <title>Building a Personal AI-Powered App | Nikunj Mistry</title>
+  <title>Inside My Serverless AI App | Nikunj Mistry</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,9 @@
   <header class="topbar">
     <a class="wordmark" href="#top">NM<span>.</span></a>
     <nav aria-label="Main navigation">
+      <a href="#overview">Overview</a>
       <a href="#architecture">Architecture</a>
+      <a href="#flow">Data flow</a>
       <a href="#engineering">Engineering</a>
       <a href="#security">Security</a>
       <a class="nav-cta" href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Read the story ↗</a>
@@ -24,76 +26,178 @@
 
   <main id="top">
     <section class="hero shell">
-      <p class="eyebrow"><span class="eyebrow-line"></span> INDEPENDENT BUILD · TECHNICAL NOTES</p>
-      <h1>A personal app,<br><em>without the server</em><br>to manage.</h1>
-      <p class="hero-copy">A closer look at the architecture behind my AI-powered finance and document workspace — the services, data flows and engineering decisions that bring it together.</p>
+      <p class="eyebrow"><span class="eyebrow-line"></span> INDEPENDENT BUILD · ENGINEERING DEEP DIVE</p>
+      <h1>An AI-powered app.<br><em>No server to babysit.</em></h1>
+      <p class="hero-copy">A practical look inside my personal Telegram automation app: why I chose Flutter and Supabase, where AI fits, how requests move through the system, and what it takes to keep a serverless application secure and maintainable.</p>
       <div class="hero-meta">
-        <span>BY NIKUNJ MISTRY</span><span class="meta-dot"></span><span>FLUTTER · SUPABASE · AI</span>
+        <span>BY NIKUNJ MISTRY</span><span class="meta-dot"></span><span>FLUTTER · SUPABASE · GROQ · TELEGRAM</span>
       </div>
       <div class="hero-rule"></div>
-      <div class="hero-note"><span class="note-mark">↘</span><span>This page is the technical companion to the <a href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Medium article</a>. It focuses on the system design rather than a product demo.</span></div>
+      <div class="hero-note"><span class="note-mark">↘</span><span>This page expands on the <a href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">original Medium article</a>. It documents the architecture and engineering approach; it is not a live product demo or a claim that every planned capability is already deployed.</span></div>
+    </section>
+
+    <section class="section shell" id="overview">
+      <div class="section-kicker">00 / PROJECT OVERVIEW</div>
+      <div class="section-heading">
+        <h2>One interface for<br>AI-assisted workflows.</h2>
+        <p>The project is a personal app focused on Telegram automation. Flutter provides the user-facing experience, Supabase supplies managed backend capabilities, and Groq is used for AI inference. The goal is to spend effort on workflows instead of maintaining servers.</p>
+      </div>
+      <div class="overview-grid">
+        <article class="overview-card"><span class="item-number">01 / EXPERIENCE</span><h3>Flutter app</h3><p>A single application codebase for the user interface, account experience and workflow controls.</p></article>
+        <article class="overview-card"><span class="item-number">02 / PLATFORM</span><h3>Supabase</h3><p>Managed authentication, PostgreSQL data storage and server-side Edge Functions provide the backend foundation.</p></article>
+        <article class="overview-card"><span class="item-number">03 / INTELLIGENCE</span><h3>Groq-powered AI</h3><p>AI requests are routed through backend logic so provider credentials and privileged operations do not need to live in the client.</p></article>
+        <article class="overview-card"><span class="item-number">04 / INTEGRATION</span><h3>Telegram</h3><p>Telegram is the core external service, with account/session handling and automation workflows coordinated by the backend.</p></article>
+      </div>
+      <div class="principle-strip"><span>DESIGN PRINCIPLE</span><p>Keep the client responsible for interaction. Keep secrets, authorization checks and trusted integration work on the server side.</p></div>
     </section>
 
     <section class="section shell" id="architecture">
       <div class="section-kicker">01 / SYSTEM DESIGN</div>
       <div class="section-heading">
-        <h2>One app. A set of<br>managed building blocks.</h2>
-        <p>The client handles the experience. Supabase provides the backend foundation, while Edge Functions coordinate privileged operations and external services.</p>
+        <h2>Managed services.<br>Clear boundaries.</h2>
+        <p>The architecture separates the app experience from backend responsibilities. Each component has a defined role, which makes the system easier to reason about and evolve.</p>
       </div>
 
       <figure class="architecture-card">
-        <div class="diagram-top"><span>ORIGINAL APPLICATION ARCHITECTURE</span><span class="diagram-status"><i></i> SOURCE DIAGRAM</span></div>
+        <div class="diagram-top"><span>ORIGINAL APPLICATION ARCHITECTURE</span><span class="diagram-status"><i></i> ORIGINAL SOURCE IMAGE</span></div>
         <img src="architecture.png" alt="Original architecture diagram from the project ZIP" style="display:block;width:100%;height:auto;">
-        <figcaption class="diagram-caption">The original architecture diagram included with the project. Shown here without recreating or changing its design.</figcaption>
+        <figcaption class="diagram-caption">The original architecture diagram supplied with the project. The source image is displayed directly, without recreating or altering its design.</figcaption>
       </figure>
 
       <div class="architecture-grid">
-        <article class="architecture-item"><span class="item-number">A / CLIENT</span><h3>Flutter</h3><p>A shared Flutter codebase provides the application interface across web and Android. It communicates with backend services rather than holding privileged integration credentials.</p></article>
-        <article class="architecture-item"><span class="item-number">B / BACKEND</span><h3>Supabase</h3><p>Authentication, PostgreSQL, file storage and Edge Functions form the managed backend foundation. Row Level Security is part of the database access model.</p></article>
-        <article class="architecture-item"><span class="item-number">C / INTEGRATIONS</span><h3>External services</h3><p>Edge Functions provide a server-side place to coordinate AI requests and connected services such as Google Sheets, broker APIs and email notifications.</p></article>
+        <article class="architecture-item"><span class="item-number">A / PRESENTATION</span><h3>Flutter</h3><p>Renders the application screens, collects user input and presents workflow status and history. It calls controlled backend interfaces instead of directly performing privileged server operations.</p></article>
+        <article class="architecture-item"><span class="item-number">B / IDENTITY & DATA</span><h3>Supabase</h3><p>Supabase Auth handles user identity. PostgreSQL stores application records, while Row Level Security can enforce which authenticated user is allowed to access each row.</p></article>
+        <article class="architecture-item"><span class="item-number">C / SERVER LOGIC</span><h3>Edge Functions</h3><p>Server-side functions provide a trusted boundary for operations that need secrets, validation, external API calls or orchestration between services.</p></article>
+        <article class="architecture-item"><span class="item-number">D / AI INFERENCE</span><h3>Groq API</h3><p>The backend can send the relevant prompt and context to Groq, receive a model response and return a controlled result to the app. The API key stays outside the distributed client.</p></article>
+        <article class="architecture-item"><span class="item-number">E / MESSAGING</span><h3>Telegram</h3><p>Telegram account connectivity is a core part of the product. Session material and account metadata require careful storage, access checks and lifecycle handling.</p></article>
+        <article class="architecture-item"><span class="item-number">F / OPERATIONS</span><h3>GitHub</h3><p>Source control provides change history and a place to maintain repeatable build and deployment workflows. Automation should be kept separate from runtime application logic.</p></article>
       </div>
     </section>
 
-    <section class="section section-dark" id="engineering">
+    <section class="section section-dark" id="flow">
       <div class="shell">
-        <div class="section-kicker">02 / IMPLEMENTATION</div>
+        <div class="section-kicker">02 / REQUEST LIFECYCLE</div>
         <div class="section-heading">
-          <h2>Keep the client lean.<br>Move privileged work server-side.</h2>
-          <p>The important design choice is not simply using serverless services. It is deciding which responsibilities belong in the app and which should stay behind a trusted backend boundary.</p>
+          <h2>From a tap to<br>a completed action.</h2>
+          <p>A useful way to understand the system is to follow one request. The exact function names and payloads depend on the implementation, but the responsibility boundaries should remain consistent.</p>
         </div>
-        <div class="workflow-list">
-          <article class="workflow-row"><span class="workflow-index">01</span><div><h3>Authentication & data access</h3><p>The user signs in through Supabase Auth. Application data lives in PostgreSQL, with Row Level Security used to enforce access rules at the database layer.</p></div><span class="workflow-tag">IDENTITY</span></article>
-          <article class="workflow-row"><span class="workflow-index">02</span><div><h3>Documents & files</h3><p>Supabase Storage provides a managed location for application documents. Access should be governed by the corresponding authorization rules rather than exposing private files publicly.</p></div><span class="workflow-tag">STORAGE</span></article>
-          <article class="workflow-row"><span class="workflow-index">03</span><div><h3>AI requests</h3><p>The app can use an Edge Function as a controlled server-side boundary for calls to the Gemini API. This keeps provider credentials out of the distributed client.</p></div><span class="workflow-tag">AI</span></article>
-          <article class="workflow-row"><span class="workflow-index">04</span><div><h3>Background & connected workflows</h3><p>Dedicated Edge Functions can isolate tasks such as PDF processing, document locking, email notifications, broker synchronisation and Sheets export.</p></div><span class="workflow-tag">AUTOMATION</span></article>
-          <article class="workflow-row"><span class="workflow-index">05</span><div><h3>Build & delivery</h3><p>GitHub Actions can automate repeatable build and deployment steps for the Flutter application and backend changes, reducing manual release work.</p></div><span class="workflow-tag">CI / CD</span></article>
+        <div class="flow-steps">
+          <article class="flow-step"><span class="flow-number">01</span><div><h3>User initiates a workflow</h3><p>The user interacts with the Flutter interface—for example, connecting a Telegram account, requesting an AI-assisted operation or reviewing saved activity.</p></div><span class="flow-chip">CLIENT</span></article>
+          <article class="flow-step"><span class="flow-number">02</span><div><h3>Identity and input are checked</h3><p>The request is associated with the signed-in user. The backend validates the input and checks whether that user is permitted to perform the requested operation.</p></div><span class="flow-chip">AUTH + VALIDATION</span></article>
+          <article class="flow-step"><span class="flow-number">03</span><div><h3>Backend coordinates the work</h3><p>An Edge Function acts as the controlled entry point for privileged work. It reads only the data it needs and keeps service credentials on the server side.</p></div><span class="flow-chip">EDGE FUNCTION</span></article>
+          <article class="flow-step"><span class="flow-number">04</span><div><h3>AI or Telegram service is called</h3><p>For an AI task, the backend sends a request to Groq. For a Telegram task, the backend coordinates the relevant account/session operation. These are separate integration paths, even when a workflow uses both.</p></div><span class="flow-chip">INTEGRATION</span></article>
+          <article class="flow-step"><span class="flow-number">05</span><div><h3>Result and activity are returned</h3><p>The backend returns a structured outcome to the app and can persist the relevant activity so the user can review or manage their history later.</p></div><span class="flow-chip">DATABASE + UI</span></article>
         </div>
-        <p class="small-note">The descriptions above explain the intended responsibilities of the components. Exact runtime triggers, schedules and deployment targets depend on the project configuration.</p>
+        <div class="flow-footnote"><strong>Why this separation matters</strong><span>It avoids placing provider keys or unrestricted Telegram operations in the mobile/web bundle, and it gives the backend one place to validate requests and handle errors.</span></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="engineering">
+      <div class="section-kicker">03 / ENGINEERING DECISIONS</div>
+      <div class="section-heading">
+        <h2>Small decisions that<br>shape the system.</h2>
+        <p>Serverless is not the absence of backend engineering. It changes who operates the infrastructure, but the application still needs deliberate decisions around state, reliability, security and cost.</p>
+      </div>
+      <div class="decision-grid">
+        <article class="decision-card"><span class="item-number">01 / CLIENT BOUNDARY</span><h3>No privileged API calls from Flutter</h3><p>The Flutter application should call the app's backend endpoints. Provider keys, service-role credentials and sensitive Telegram operations belong behind server-side authorization checks.</p><div class="decision-note">BENEFIT · Smaller client trust boundary</div></article>
+        <article class="decision-card"><span class="item-number">02 / SESSION HANDLING</span><h3>Treat Telegram sessions as secrets</h3><p>A Telegram session string can grant account access. Store it only where access can be tightly restricted, never log it, and never return it to users or clients that do not need it.</p><div class="decision-note">BENEFIT · Reduced account exposure</div></article>
+        <article class="decision-card"><span class="item-number">03 / AI ORCHESTRATION</span><h3>Keep model calls behind a function</h3><p>Centralizing AI requests makes it possible to validate inputs, limit request sizes, select prompts, handle provider errors and change model configuration without shipping a new client build.</p><div class="decision-note">BENEFIT · One controlled AI boundary</div></article>
+        <article class="decision-card"><span class="item-number">04 / USER HISTORY</span><h3>Make activity understandable</h3><p>Workflow history should help the user understand what ran and what happened. User-facing records should be scoped to the owner and support the intended retention and deletion behavior.</p><div class="decision-note">BENEFIT · Better transparency and control</div></article>
+        <article class="decision-card"><span class="item-number">05 / ASYNC WORK</span><h3>Do not confuse a request with a job</h3><p>Long-running work may need a job record, status transitions, retry rules and a way for the app to check progress. A successful HTTP response alone does not prove that a background task finished.</p><div class="decision-note">BENEFIT · More reliable workflows</div></article>
+        <article class="decision-card"><span class="item-number">06 / SCHEDULING</span><h3>Make time-based work explicit</h3><p>Scheduled automation needs a clear owner, schedule, enabled/disabled state, next-run behavior and execution history. A schedule should be validated on the backend, not trusted from a client clock.</p><div class="decision-note">BENEFIT · Predictable automation</div></article>
+      </div>
+
+      <div class="subsection-heading"><span class="item-number">RELIABILITY CHECKLIST</span><h3>What a production-minded workflow should account for</h3></div>
+      <div class="checklist-grid">
+        <div><b>Input validation</b><p>Reject malformed, oversized or unsupported requests before calling external services.</p></div>
+        <div><b>Timeouts and retries</b><p>Set sensible timeouts and retry only operations where repeating the action is safe.</p></div>
+        <div><b>Idempotency</b><p>Prevent duplicate execution when a client retries after a network interruption.</p></div>
+        <div><b>Observability</b><p>Log operation IDs, outcomes and safe diagnostic context without logging secrets or private message content.</p></div>
+        <div><b>Rate limiting</b><p>Protect costly AI calls and connected accounts from accidental loops or abusive request patterns.</p></div>
+        <div><b>Failure states</b><p>Show useful pending, completed and failed states instead of treating every request as successful.</p></div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="shell">
+        <div class="section-kicker">04 / DATA & STATE</div>
+        <div class="section-heading">
+          <h2>Store the minimum.<br>Enforce ownership.</h2>
+          <p>The database is more than a place to save values. It is where ownership, lifecycle and application state need to be made explicit.</p>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Logical area</th><th>What it represents</th><th>Important consideration</th></tr></thead>
+            <tbody>
+              <tr><td>Account identity</td><td>The authenticated application user</td><td>Use the authenticated user ID as the ownership boundary.</td></tr>
+              <tr><td>Telegram connection</td><td>Connected account metadata and protected session material</td><td>Restrict session access; do not expose secrets in client responses or logs.</td></tr>
+              <tr><td>Workflow history</td><td>Past user-triggered operations and their outcomes</td><td>Scope records to the owner and define retention/deletion behavior.</td></tr>
+              <tr><td>Scheduled tasks</td><td>Recurring or delayed automation configuration</td><td>Validate schedules and record execution status separately from configuration.</td></tr>
+              <tr><td>Execution state</td><td>Pending, running, completed or failed work</td><td>Use explicit state transitions and safe retry behavior.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small-note light-note">These are logical data domains for explaining the design, not a claim that the production database uses these exact table names or columns.</p>
       </div>
     </section>
 
     <section class="section shell" id="security">
-      <div class="section-kicker">03 / SECURITY & PRIVACY</div>
+      <div class="section-kicker">05 / SECURITY & PRIVACY</div>
       <div class="section-heading">
-        <h2>Private data changes<br>how you share a project.</h2>
-        <p>This application is built around personal financial information and private documents. That makes access control and careful disclosure part of the engineering work — not an afterthought.</p>
+        <h2>Convenience cannot<br>come before control.</h2>
+        <p>Telegram sessions, AI prompts and user activity can contain sensitive information. The application should be designed so that access is limited, secrets stay server-side and diagnostic output does not leak private data.</p>
       </div>
       <div class="security-grid">
-        <div class="security-lead"><span class="large-quote">“</span><p>I’m sharing the architecture and engineering decisions, not the contents of the application.</p></div>
+        <div class="security-lead"><span class="large-quote">“</span><p>I can explain how the system is built without exposing the private data it handles.</p></div>
         <div class="security-points">
-          <div><b>01</b><p><strong>Database policies</strong><br>Use Row Level Security to restrict which records an authenticated user can access.</p></div>
-          <div><b>02</b><p><strong>Server-side secrets</strong><br>Keep third-party API keys and privileged credentials in backend-managed secrets, never in the Flutter bundle.</p></div>
-          <div><b>03</b><p><strong>Private files</strong><br>Keep sensitive documents behind authenticated access controls and avoid publishing real user data in screenshots or examples.</p></div>
+          <div><b>01</b><p><strong>Row Level Security</strong><br>Enable and test policies for user-owned rows. Do not assume that hiding a screen in Flutter protects the underlying data.</p></div>
+          <div><b>02</b><p><strong>Server-side secrets</strong><br>Store Groq and other integration credentials in backend-managed secrets. Never commit them to Git or embed them in the app bundle.</p></div>
+          <div><b>03</b><p><strong>Telegram session protection</strong><br>Limit who and what can read session material. Avoid plaintext exposure in logs, analytics, crash reports and client payloads.</p></div>
+          <div><b>04</b><p><strong>Least privilege</strong><br>Use narrowly scoped database and function permissions. Keep administrative/service-role credentials away from normal user sessions.</p></div>
+          <div><b>05</b><p><strong>Safe observability</strong><br>Prefer request IDs, timing, status codes and redacted error details over logging full prompts, messages or credentials.</p></div>
         </div>
       </div>
-      <div class="privacy-callout"><span class="callout-icon">i</span><p><strong>Why there is no live demo</strong><br>The app contains personal financial records, sensitive documents and private integrations. I’m not publishing application screenshots or a live demo because protecting that information matters more than showcasing the interface.</p></div>
+      <div class="privacy-callout"><span class="callout-icon">i</span><p><strong>Why there is no live demo</strong><br>The app connects to personal Telegram accounts and handles private session information and user activity. For privacy and account-safety reasons, I am sharing the architecture and engineering approach rather than publishing a live demo, real account screenshots or sensitive implementation data.</p></div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="shell">
+        <div class="section-kicker">06 / TRADE-OFFS</div>
+        <div class="section-heading">
+          <h2>Serverless removes<br>servers—not decisions.</h2>
+          <p>Managed platforms reduce infrastructure operations, but they introduce platform constraints and make good application boundaries even more important.</p>
+        </div>
+        <div class="tradeoff-grid">
+          <div><span class="trade-label">WHAT GETS SIMPLER</span><h3>Less infrastructure to operate</h3><p>No self-managed application server to patch, provision or keep running for every request. Managed services provide the runtime building blocks.</p></div>
+          <div><span class="trade-label">WHAT STILL NEEDS DESIGN</span><h3>More attention to boundaries</h3><p>Cold starts, execution limits, database policies, provider quotas, retries, background processing and vendor-specific behavior still need to be understood.</p></div>
+          <div><span class="trade-label">WHAT YOU GAIN</span><h3>Room to focus on the product</h3><p>Time can move from routine server maintenance toward user workflows, integration quality, testing and a better application experience.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="roadmap">
+      <div class="section-kicker">07 / NEXT ITERATIONS</div>
+      <div class="section-heading">
+        <h2>Build in layers.<br>Keep improving.</h2>
+        <p>A personal automation app grows through small, testable improvements. The next capabilities should build on the same identity, data and integration boundaries.</p>
+      </div>
+      <div class="roadmap-list">
+        <div><span>01</span><p><strong>Scheduling and execution visibility</strong><br>Make recurring workflows easy to configure, pause, inspect and troubleshoot.</p><em>WORKFLOW CONTROL</em></div>
+        <div><span>02</span><p><strong>History that users control</strong><br>Provide a clear activity timeline and let users remove records they no longer need.</p><em>USER EXPERIENCE</em></div>
+        <div><span>03</span><p><strong>Inbound webhook workflows</strong><br>Handle incoming events through validated backend endpoints, with optional AI-assisted processing where appropriate.</p><em>EVENT-DRIVEN</em></div>
+        <div><span>04</span><p><strong>Stronger operational safeguards</strong><br>Add better observability, rate limits, idempotency and failure recovery as usage grows.</p><em>RELIABILITY</em></div>
+      </div>
+      <p class="small-note">This roadmap describes areas for continued development; it should not be read as a statement that each item is already available in production.</p>
     </section>
 
     <section class="closing shell">
       <p class="eyebrow"><span class="eyebrow-line"></span> THE BIGGER TAKEAWAY</p>
-      <h2>Less time managing<br>servers. More time<br><em>building useful things.</em></h2>
-      <p>Managed infrastructure does not mean there is no infrastructure. It means the operational responsibilities are handled by services, leaving me to focus more on application logic, integration design and the user experience.</p>
-      <a class="story-link" href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Read the original Medium story <span>↗</span></a>
+      <h2>Build the workflow.<br>Not the infrastructure.<br><em>Own the decisions.</em></h2>
+      <p>Managed infrastructure does not mean there is no infrastructure. It means the operational foundation is provided by services, while I remain responsible for the architecture, security, integration logic and user experience built on top of them.</p>
+      <div class="closing-actions">
+        <a class="story-link" href="https://medium.com/@nikunjmistry1000/i-built-my-own-ai-powered-app-without-managing-a-single-server-da1c1a101971" target="_blank" rel="noreferrer">Read the original Medium story <span>↗</span></a>
+        <a class="story-link secondary-link" href="https://github.com/Nikunjmistry22/personal-app" target="_blank" rel="noreferrer">Explore the source repository <span>↗</span></a>
+      </div>
     </section>
   </main>
 
