@@ -79,3 +79,20 @@
  .overview-grid,.checklist-grid{grid-template-columns:1fr}
  .data-table th,.data-table td{padding:13px}
 }
+
+
+/* Project-specific finance, documents and Gemini sections */
+.integration-detail{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.integration-detail article{padding:24px;background:#f7f6f0;border:1px solid #dce0d7}
+.integration-detail h3{font:700 19px var(--display);letter-spacing:-.6px;margin:15px 0 10px;color:#27352c}
+.integration-detail p{font-size:13px;line-height:1.8;color:var(--muted);margin:0}
+.mini-flow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:20px;padding-top:15px;border-top:1px solid #dce0d7}
+.mini-flow span{font:10px var(--mono);color:#596a4c;background:#e8ecdf;padding:8px 9px}
+.mini-flow b{font:12px var(--mono);color:#8a9b5b}
+.light-workflow{border-top:1px solid var(--line)}
+.light-workflow .workflow-row{border-bottom:1px solid var(--line)}
+.light-workflow .workflow-index{color:#84984f}
+.light-workflow .workflow-row h3{color:var(--ink)}
+.light-workflow .workflow-row p{color:var(--muted)}
+.light-workflow .workflow-tag{color:#84914f}
+@media(max-width:720px){.integration-detail{grid-template-columns:1fr}.mini-flow{gap:6px}.mini-flow span{font-size:9px}}
